@@ -8,7 +8,7 @@ on:
 
 
 env:
-  PYTHON_VERSION: &python-version '3.11'
+  PYTHON_VERSION: '3.11'
 
 
 
@@ -28,7 +28,7 @@ jobs:
         id: setup_python
         uses: actions/setup-python@v5
         with:
-          python-version: *python-version
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install uv
         run: |
