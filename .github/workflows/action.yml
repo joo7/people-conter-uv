@@ -55,7 +55,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install flake8
-        run: uv pip install flake8
+        run: uv pip install --system flake8
 
       - name: Run flake8
         run: |
