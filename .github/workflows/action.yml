@@ -9,7 +9,10 @@ on:
 env:
   PYTHON_VERSION: "3.12"
   UV_BIN_DIR: "$HOME/.cargo/bin"
+  PATH: ${{ env.UV_BIN_DIR }}:${{ env.PATH }}
 
+
+  
 jobs:
   build:
     name: 🔧 Build Environment
