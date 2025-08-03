@@ -6,11 +6,8 @@ on:
   pull_request:
     branches: ["**"]
 
-
 env:
-  PYTHON_VERSION: '3.11'
-
-
+  PYTHON_VERSION: "3.12"
 
 jobs:
   build:
@@ -36,8 +33,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install flake8
-        run: |
-          uv pip install flake8
+        run: uv pip install flake8
 
   lint:
     name: 🧹 Lint Code
@@ -51,7 +47,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: *python-version
+          python-version: ${{ needs.build.outputs.python-version }}
 
       - name: Install uv
         run: |
@@ -59,8 +55,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install flake8
-        run: |
-          uv pip install flake8
+        run: uv pip install flake8
 
       - name: Run flake8
         run: |
@@ -80,7 +75,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: *python-version
+          python-version: ${{ needs.build.outputs.python-version }}
 
       - name: Install uv
         run: |
@@ -88,8 +83,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install dependencies and pytest
-        run: |
-          uv sync 
+        run: uv sync
 
       - name: Run tests
         run: |
