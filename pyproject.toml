@@ -1,0 +1,9 @@
+[project]
+name = "people-counter"
+version = "0.1.0"
+description = "this project is for counting people using open CV"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.3.2",
+]
