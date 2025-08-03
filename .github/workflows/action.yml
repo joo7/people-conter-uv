@@ -8,11 +8,8 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  UV_BIN_DIR: "$HOME/.cargo/bin"
-  PATH: ${{ env.UV_BIN_DIR }}:${{ env.PATH }}
+  UV_BIN_DIR: "${HOME}/.cargo/bin"
 
-
-  
 jobs:
   build:
     name: 🔧 Build Environment
@@ -47,7 +44,7 @@ jobs:
           fi
 
       - name: Add uv to PATH
-        run: echo "$UV_BIN_DIR" >> $GITHUB_PATH
+        run: echo "${UV_BIN_DIR}" >> $GITHUB_PATH
 
   lint:
     name: 🧹 Lint Code
@@ -70,10 +67,11 @@ jobs:
           key: uv-bin-${{ runner.os }}
 
       - name: Add uv to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "${UV_BIN_DIR}" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: uv pip install --system flake8 pytest
+
       - name: Run flake8
         run: flake8 .
 
@@ -98,7 +96,7 @@ jobs:
           key: uv-bin-${{ runner.os }}
 
       - name: Add uv to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "${UV_BIN_DIR}" >> $GITHUB_PATH
 
       - name: Run tests
         run: ./run_tests.sh
