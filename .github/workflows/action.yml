@@ -46,9 +46,6 @@ jobs:
       - name: Add uv to PATH
         run: echo "$UV_BIN_DIR" >> $GITHUB_PATH
 
-      - name: Install dependencies system-wide
-        run: uv pip install --system flake8 pytest
-
   lint:
     name: 🧹 Lint Code
     runs-on: ubuntu-latest
@@ -72,6 +69,8 @@ jobs:
       - name: Add uv to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+      - name: Install dependencies
+        run: uv pip install --system flake8 pytest
       - name: Run flake8
         run: flake8 .
 
