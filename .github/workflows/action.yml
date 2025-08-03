@@ -39,11 +39,12 @@ jobs:
           if [ ! -f "$UV_BIN_DIR/uv" ]; then
             curl -Ls https://astral.sh/uv/install.sh | bash
           fi
-          echo "$UV_BIN_DIR" >> $GITHUB_PATH
+
+      - name: Add uv to PATH
+        run: echo "$UV_BIN_DIR" >> $GITHUB_PATH
 
       - name: Install dependencies system-wide
-        run: |
-          uv pip install --system flake8 pytest
+        run: uv pip install --system flake8 pytest
 
   lint:
     name: 🧹 Lint Code
@@ -65,9 +66,11 @@ jobs:
           path: ${{ env.UV_BIN_DIR }}
           key: uv-bin-${{ runner.os }}
 
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       - name: Run flake8
         run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           flake8 . || echo "⚠️ Lint warnings found"
         continue-on-error: true
 
@@ -91,8 +94,9 @@ jobs:
           path: ${{ env.UV_BIN_DIR }}
           key: uv-bin-${{ runner.os }}
 
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       - name: Run tests
         run: |
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          uv sync 
           ./run_tests.sh || echo "⚠️ Tests failed"
