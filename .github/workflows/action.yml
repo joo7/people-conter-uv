@@ -28,6 +28,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Ensure uv bin dir exists
+        run: mkdir -p ${{ env.UV_BIN_DIR }}
+
       - name: Cache uv binary
         uses: actions/cache@v4
         with:
@@ -36,7 +39,7 @@ jobs:
 
       - name: Install uv (if not cached)
         run: |
-          if [ ! -f "$UV_BIN_DIR/uv" ]; then
+          if ! command -v uv &> /dev/null; then
             curl -Ls https://astral.sh/uv/install.sh | bash
           fi
 
@@ -70,9 +73,7 @@ jobs:
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Run flake8
-        run: |
-          flake8 . || echo "⚠️ Lint warnings found"
-        continue-on-error: true
+        run: flake8 .
 
   test:
     name: 🧪 Run Tests
@@ -98,5 +99,4 @@ jobs:
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Run tests
-        run: |
-          ./run_tests.sh || echo "⚠️ Tests failed"
+        run: ./run_tests.sh
