@@ -1,38 +1,97 @@
-name: Lint Python Code
+name: Python CI with uv and linting
 
 on:
   push:
-    branches:
-      - "**"
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+
+env:
+  PYTHON_VERSION: &python-version '3.11'
+
+
 
 jobs:
-  lint:
-    name: Lint with Flake8
+  build:
+    name: 🔧 Build Environment
     runs-on: ubuntu-latest
+
+    outputs:
+      python-version: ${{ steps.setup_python.outputs.python-version }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python version from pyproject.toml
-        id: pyversion
+      - name: Set up Python
+        id: setup_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: *python-version
+
+      - name: Install uv
         run: |
-          PY_VERSION=$(grep -A 1 '\[project\]' pyproject.toml | grep requires-python | sed -E "s/.*'>=([0-9]+\.[0-9]+).*/\1/" || echo "3.11")
-          echo "Using Python $PY_VERSION"
-          echo "version=$PY_VERSION" >> $GITHUB_OUTPUT
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install flake8
+        run: |
+          uv pip install flake8
+
+  lint:
+    name: 🧹 Lint Code
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ steps.pyversion.outputs.version }}
+          python-version: *python-version
+
+      - name: Install uv
+        run: |
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install flake8
         run: |
-          python -m pip install --upgrade pip
-          pip install flake8
+          uv pip install flake8
 
-      - name: Run flake8 and warn
+      - name: Run flake8
         run: |
           echo "Running flake8..."
-          flake8 . || echo "⚠️ Flake8 found issues, but continuing workflow."
+          flake8 . || echo "⚠️ Lint warnings found"
         continue-on-error: true
+
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: *python-version
+
+      - name: Install uv
+        run: |
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies and pytest
+        run: |
+          uv sync 
+
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+          ./run_tests.sh
